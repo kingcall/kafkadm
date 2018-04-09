@@ -18,14 +18,15 @@ import java.util.Properties;
  * 问题是 zookeeper 提供的zkutil 和 kafka 提供的 zkutils 的关系
  **/
 public class Topics {
-    public static  final String ZK_CONNECT="master:2181";
+    public static  final String ZK_CONNECT="master:2181,slave1:2181,slave2:2181";
     public static  final int SESSION_TIMEOUT=1000;
     public static  final int CONNECT_TIMEOUT=1000;
 
     public static void main(String[] args) {
         Properties properties=new Properties();
-        //CreateTopic("API",6,3,properties);
-        modifyTopicConfig("API");
+//        CreateTopic("API",6,3,properties);
+//        modifyTopicConfig("API");
+        deleteTopic("kingcall");
     }
     public static void CreateTopic(String topic, int partitios, int replica, Properties properties){
         ZkUtils zkUtils=null;
@@ -44,6 +45,19 @@ public class Topics {
         Properties addprop=new Properties();
         addprop.put("segment.bytes",200000000);
         AdminUtils.changeTopicConfig(zkUtils,topic,addprop);
+    }
+
+    public static void addPartitions(String topic){
+        ZkUtils zkUtils=null;
+        zkUtils=ZkUtils.apply(ZK_CONNECT,SESSION_TIMEOUT,CONNECT_TIMEOUT, JaasUtils.isZkSecurityEnabled());
+        //AdminUtils.addPartitions(zkUtils,topic,3,"",true,AdminUtils.addPartitions$default$6());
+
+    }
+
+    public static void deleteTopic(String topic){
+        ZkUtils zkUtils=null;
+        zkUtils=ZkUtils.apply(ZK_CONNECT,SESSION_TIMEOUT,CONNECT_TIMEOUT, JaasUtils.isZkSecurityEnabled());
+        AdminUtils.deleteTopic(zkUtils,topic);
 
     }
 }
